@@ -11,10 +11,10 @@ int main()
     string bent[5000];
     string match[5000];
     int count = 0;
-	int weight[5000] = {0};
-	int weightCovert[5000] = {0};
-    int diameter[5000] = {0};
-	int diameterConvert[5000] = {0};
+	double weight[5000] = {0};
+	double weightCovert[5000] = {0};
+    double diameter[5000] = {0};
+	double diameterConvert[5000] = {0};
     const int MAX_TRIES = 3;
     int numLines = 0;
     int numActualLines = 0;
@@ -153,6 +153,7 @@ int main()
     //from Line1 to LineN
     for (i = 0; i < numLines; i++, numActualLines++)
 	{
+        cout << "----------------- Line " << i+1 << " -----------------" << endl;
     	//Check if the two sensor measurements and two strings datas were present
         do 
 		{
@@ -284,8 +285,11 @@ int main()
 		//Check if the extra data was present
         bool hasExtra = false;
         string extraData;
-        inFile.get(c);
-        extraData += c;
+        do {
+            inFile.get(c);
+            extraData += c;
+        } while (c == ' ' || c == '\t');
+        
         if (c != '\n' && c != '\r')
 		{
         	hasExtra = true;
@@ -329,7 +333,7 @@ int main()
 		//The bent coin is placed into the bent coin container
 		//The bent coin container can hold up to 100g
 		if( bent[i] == "bent" )        
-		{ 
+		{
 			sumOfBentCoins += weight[i];  
 			TotalWeightBentCoins += sumOfBentCoins;
 		    
@@ -338,7 +342,8 @@ int main()
 			//the weight of coins in the new container
 			//will be updated to be the weight of the new coin
 			if( sumOfBentCoins > 100)   
-			{
+            {
+                cout << "DEBUG: loop A-1" << endl;
 				sumOfBentCoins = weight[i];
 				outFile << "The Coin Sorter has sent this coin to the bent coin container" << endl;
 				outFile << "The coin does not fit in the bent coin container" << endl;
@@ -356,7 +361,8 @@ int main()
 
 			//Otherwise the new coin will be added to the bent coin container
 			else
-			{
+            {
+                cout << "DEBUG: loop A-2" << endl;
 				outFile << "The Coin Sorter has sent this coin to the other coin container" << endl;
 			    outFile << "The coins in the other coin container now weigh ";
 			    outFile << sumOfBentCoins << " grams" << endl;
@@ -371,14 +377,16 @@ int main()
 	    //consistent with the weight, diameter, image of the Canadian coins
 		else
 		{
+            cout << "DEBUG: Pre-calculation - Weight: " << weight[i] << "\tDiameter: " << diameter[i] << endl;
 			weight[i] = 2.0 * ( weight[i] * 5.0 / MAX_SENSOR );  //convert the integer weight[i] to the weight of the coin in grams
 			diameter[i] = 10 + diameter[i] * 30.0 / MAX_SENSOR;  //convert the integer diameter[i] to the diamter of the coin in millimeters
-			
 			//If the coin is nickel
 			//the nickel is placed into the dime wrapper
-			//The nickel wrapper can hold 40 nickels
+            //The nickel wrapper can hold 40 nickels
+            cout << "DEBUG: Post-calculation - Weight: " << weight[i] << "\tDiameter: " << diameter[i] << endl;
 			if( (weight[i] >= 3.60 && weight[i] <= 4.30) && (diameter[i] >= 20.2 && diameter[i] <= 21.8) && match[i] == "BothMatch" )  
-			{
+            {
+                cout << "DEBUG: loop B-1-1" << endl;
 				numNickels++;
 				TotalnumNickels += numNickels;
 			
@@ -400,7 +408,8 @@ int main()
 			
 				//Otherwise the nickel will be added to the nickel wrapper
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-1-2" << endl;
 					outFile << "The Coin Sorter has sent one coin to the nickels wrapper" << endl;
 					outFile << "There are now " << numNickels << " coins in the nickel wrapper" << endl;
 					cout << "The Coin Sorter has sent one coin to the nickels wrapper" << endl;
@@ -413,6 +422,7 @@ int main()
 			//The dime wrapper can hold 50 dimes
 			else if( (weight[i] >= 1.30 && weight[i] <= 2.20) && (diameter[i] >= 17.3 && diameter[i] <= 18.7) && match[i] == "BothMatch" )
 			{
+                
 				numDimes++;   
 				TotalnumDimes += numDimes;
 			
@@ -421,7 +431,8 @@ int main()
 				//the number of dimes in the wrapper will be reset to 0
 				//and the number of the roll of dimes will be incremented
 				if(numDimes == 50)   
-				{
+                {
+                    cout << "DEBUG: loop B-2-1" << endl;
 					outFile << "The Coin Sorter has sent one coin to the dimes wrapper" << endl;
 					outFile << "The dime wrapper is now full" << endl;
 					outFile << "The dime wrapper has now been replaced" << endl;
@@ -434,7 +445,8 @@ int main()
 
 				//Otherwise the dime will be added to the dime wrapper
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-2-2" << endl;
 					outFile << "The Coin Sorter has sent one coin to the dimes wrapper" << endl;
 					outFile << "There are now " << numDimes << " coins in the dimes wrapper" << endl;
 					cout << "The Coin Sorter has sent one coin to the dimes wrapper" << endl;
@@ -455,7 +467,8 @@ int main()
 				//the number of quarters in the wrapper will be reset to 0
 				//and the number of the roll of quarters will be incremented
 				if(numQuarters == 40)
-				{
+                {
+                    cout << "DEBUG: loop B-3-1" << endl;
 					outFile << "The Coin Sorter has sent one coin to the quarters wrapper" << endl;
 					outFile << "The quarter wrapper is now full" << endl;
 					outFile << "The quarter wrapper has now been replaced" << endl;
@@ -468,7 +481,8 @@ int main()
 
 				//Otherwise the dime will be added to the quarter wrapper
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-3-2" << endl;
 					outFile << "The Coin Sorter has sent one coin to the quarters wrapper" << endl;
 					outFile << "There are now " << numQuarters << " coins in the quarters wrapper" << endl;
 					cout << "The Coin Sorter has sent one coin to the quarters wrapper" << endl;
@@ -489,7 +503,8 @@ int main()
 				//the number of loonies in the wrapper will be reset to 0
 				//and the number of the roll of loonies will be incremented
 				if(numLoonies == 25)
-				{
+                {
+                    cout << "DEBUG: loop B-4-1" << endl;
 					outFile << "The Coin Sorter has sent one coin to the loonies wrapper" << endl;
 					outFile << "The loonie wrapper is now full" << endl;
 					outFile << "The loonie wrapper has now been replaced" << endl;
@@ -502,7 +517,8 @@ int main()
 
 				//Otherwise the dime will be added to the loonie wrapper
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-4-2" << endl;
 					outFile << "The Coin Sorter has sent one coin to the loonies wrapper" << endl;
 					outFile << "There are now " << numLoonies << " coins in the loonies wrapper" << endl;
 					cout << "The Coin Sorter has sent one coin to the loonies wrapper" << endl;
@@ -523,7 +539,8 @@ int main()
 				//the number of toonies in the wrapper will be reset to 0
 				//and the number of the roll of toonies will be incremented
 				if(numToonies == 25)
-				{
+                {
+                    cout << "DEBUG: loop B-5-1" << endl;
 					outFile << "The Coin Sorter has sent one coin to the toonies wrapper" << endl;
 					outFile << "The toonie wrapper is now full" << endl;
 					outFile << "The toonie wrapper has now been replaced" << endl;
@@ -536,7 +553,8 @@ int main()
 
 				//Otherwise the dime will be added to the toonie wrapper
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-5-2" << endl;
 					outFile << "The Coin Sorter has sent one coin to the tooies wrapper" << endl;
 					outFile << "There are now " << numToonies << " coins in the toonies wrapper" << endl;
 					cout << "The Coin Sorter has sent one coin to the tooies wrapper" << endl;
@@ -559,7 +577,8 @@ int main()
 				//the weight of coins in the new container
 				//will be updated to be the weight of the new coin
 				if( sumOfWeightOtherCoins > 200)
-				{
+                {
+                    cout << "DEBUG: loop B-6-1" << endl;
 					sumOfWeightOtherCoins = weight[i];
 					outFile << "The Coin Sorter has sent this coin to the other coin container" << endl;
 					outFile << "The coins in the other coin container now weigh ";
@@ -573,7 +592,8 @@ int main()
 
 				//Otherwise the new coin will be added to the other container
 				else
-				{
+                {
+                    cout << "DEBUG: loop B-6-2" << endl;
 					outFile << "The Coin Sorter has sent this coin to the other coin container" << endl;
 					outFile << "The coins in the other coin container now weigh ";
 					outFile << sumOfWeightOtherCoins << " grams" << endl;
